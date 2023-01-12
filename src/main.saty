@@ -1,0 +1,20 @@
+@require: stdjareport
+@require: figbox/figbox
+@require: enumitem/enumitem
+@require: azmath/azmath
+@require: easytable/easytable
+
+let-math \p x = ${\paren{#x}}
+in
+
+
+document(|
+    title = { Gödelの不完全性定理 };
+    author = { SnO2WMaN };
+    show-title = false;
+    show-toc = false;
+|)'<
+    +chapter{  }<
+
+    >
+>

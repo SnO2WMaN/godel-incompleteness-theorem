@@ -1,0 +1,11 @@
+.direnv
+result
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# SATySFi
+.satysfi/dist
+*.satysfi-aux
+*.pdf
