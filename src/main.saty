@@ -52,6 +52,9 @@ let-math \hash = math-char MathBin `#`
 
 let-math \iff = ${\Longleftrightarrow}
 
+let-math \term0 = ${\mathbb{0}}
+let-math \arithsystem = ${\mathcal{A}}
+
 in
 
 document(|
@@ -238,7 +241,7 @@ document(|
 			+definition ?:(`definition:hilbert-deduction`) ?:({Hilbert流証明論における演繹}) <
 				+p{
 					証明体系${\hsystem}において，
-					${\Gamma}を${\hsystem}で証明された論理式の列とする．
+					${\Gamma}を${\hsystem}の定理の列とする．
 					前提${\Gamma}での${\phi_n}の演繹とは，
 					次の条件を満たす論理式${\phi_i}の有限列${\phi_1,\phi_2,\dots,\phi_{n}}を指す．
 				}
@@ -356,27 +359,76 @@ document(|
 			});
 		>
 	>
-	+section{第一不完全性定理}<
-		+subsection{体系における証明}<
-
-			+fact ?: (`fact:functionize-axiom-and-induction`) ?:({${\system}の公理と導出の関数化}) <
+	+section{一階算術}<
+		+subsection{定義}<
+			+p{
+				一階述語論理の各々の記号を限定し，自然数の上での操作が出来るような体系を考える．
+			}
+			+definition ?:(`definition:1st-arithmetic-language`) ?:({一階算術の言語})<
 				+p{
-					${x,y_1,\dots,y_k}を自然数とする．体系${\system}に対して，次の関数${\axiom{x}}と${\induction{x,y_1,\dots,y_k}}が，
+					一階述語論理の定項，演算子，述語を以下のように限定した論理を一階算術と呼ぶ．
+					論理関数や量化子などはそのままとする．
+				}
+				+description<
+					+dd{定項}{${\term0}}
+					+dd{1項演算子}{${s}}
+					+dd{2項演算子}{${+,\times}}
+					+dd{2項述語}{${=,<}}
+				>
+			>
+			+p {
+				非形式的には，一階算術の項は何らかの自然数を指示している
+				\footnote{本来はそのような解釈を行う構造を用意する必要があり，それは標準構造と呼ばれる．}
+				と考えられる．
+			}
+			+enumerate{
+				* 項${\term0}は自然数${0}を指示する．
+				* 項${s\p{\term0}}は自然数${1}を指示し，
+				${s\p{s\p{\term0}}}は自然数${2}を指示する．
+				以下同様にして，項${s \p{\cdots s\p{\term0} \cdots }}で任意の自然数を指示することが出来る．
+				* ${+}は加算を意味する．
+				例えば，自然数の加算${1 + 2}は項${s\p{\term0} + s\p{s\p{\term0}}}として
+				\footnote{ここでは中置の定義は既に済ませたものとしている．${\times}の際も同様．}
+				指示される．
+				* ${\times}は乗算を意味する．
+				例えば，自然数の乗算${1 \times 2}は項${s\p{\term0} \times s\p{s\p{\term0}}}として指示される．
+			}
+		>
+		+subsection{一階算術上の証明体系の例}<
+			+p{
+				一階算術の上で，通常の自然数の操作が出来るような証明体系${\arithsystem}を例として用意する．
+				まず，次の公理を${\arithsystem}に用意する．
+				% TODO: Peano算術なり何なりを持ってくる
+			}
+			+p{
+				更に，次の推論規則を${\arithsystem}に用意する．
+				% TODO: mpと汎化
+			}
+		>
+		+subsection{表現可能性}<
+			+p{
+				事実\ref(`fact:functionizable-axiom-and-induction`);は，それだけでも長くなるので証明を割愛する．
+			}
+			+fact ?:(`fact:functionizable-axiom-and-induction`) <
+				+p{
+					${x,y_1,\dots,y_k}を自然数とする．体系${\arithsystem}に対して，次の関数${\axiom{x}}と${\induction{x,y_1,\dots,y_k}}が，
 					原始再帰関数として構成出来るとする．
 				}
 				+enumerate{
 					* ${\axiom{x}}は，
-					${x}をGödel数とする論理式${E_x}が，
-					${\system}のいずれかの公理の形に合致していれば0を，
+					${x}をGödel数とする式${E_x}が，
+					${\arithsystem}のいずれかの公理の形に合致していれば0を，
 					そうでなければ1を返す関数とする．
 
 					* ${\induction{x,y_1,\dots,y_k}}は，
-					${y_1,\cdots,y_k}をGödel数とする論理式${E_{y_1},\cdots,E_{y_k}}から，
-					${\system}のいずれかの推論規則によって導出される論理式のGödel数が${x}であるならば0を，
+					${y_1,\cdots,y_k}をGödel数とする式${E_{y_1},\cdots,E_{y_k}}から，
+					${\arithsystem}のいずれかの推論規則によって導出される論理式のGödel数が${x}であるならば0を，
 					そうでなければ1を返す関数とする．
 				}
 			>
 		>
+	>
+	+section{第一不完全性定理}<
 		+subsection{爆発律} <
 			+definition ?:(`definition:explosion-raw`) ?:({体系の爆発律}) <
 				+p{
