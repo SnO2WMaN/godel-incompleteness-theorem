@@ -5,6 +5,7 @@
 @require: azmath/azmath
 @require: easytable/easytable
 
+open AZMathAccent
 open EnumitemAlias
 
 let-block +dd dt it-dd = '< +ditem?:(fun it -> {#it;}){#dt;}{#it-dd;}<> >
@@ -23,12 +24,11 @@ let-block ctx +fact = JLReqTheorem.theorem-scheme (|
 	JLReqTheorem.default-config-theorem with font = [italic];
 |) {事実} theorem-counter ctx
 
-let-math \p x = ${\paren{#x}}
 let-math \system = ${\mathcal{S}}
 
 let-math \ulcorner = math-char MathBin `┌`
 let-math \urcorner = math-char MathBin `┐`
-let-math \godelnumber x = ${\ulcorner #x \urcorner}
+let-math \godelnumber x = ${\overbrace{#x}}
 
 let-math \dots = ${\cdots}
 let-math \axiom args = ${\mathrm{axiom}\p{#args}}
@@ -43,6 +43,9 @@ let-math \land-symbol = math-char MathBin `∧`
 let-math \lor-symbol = math-char MathBin `∨`
 let-math \limp-symbol = math-char MathBin `→`
 let-math \liff-symbol = math-char MathBin `↔`
+
+let-math \prime = math-char MathBin `'`
+let-math \hash = math-char MathBin `#`
 
 in
 
@@ -60,7 +63,7 @@ document(|
 				一階述語論理の言語として，以下の記号を用いる．
 			}
 			+description<
-				+dd{定数}{${a,b,c,\cdots}}
+				+dd{定項}{${a,b,c,\cdots}}
 				+dd{変項}{${x,y,z,\cdots}}
 				+dd{${n}項演算子}{${f,g,h,\cdots}}
 				+dd{${n}項述語}{${P,Q,R,\cdots}}
@@ -69,14 +72,23 @@ document(|
 				+dd{コンマ}{${,}}
 				+dd{括弧}{${(,)}}
 			>
+			+pn {
+				上記の記号を並べたものを式と呼ぶ．式には以降の
+				定義\ref(`definition:1pl-term`);や
+				定義\ref(`definition:1pl-formula`);
+				に当てはまらない全く無意味な並びも存在する．
+			}
 		>
 		+definition ?:(`definition:1pl-term`) ?:({一階述語論理の項}) <
 			+p{
 				一階述語論理での項とは，次のように定義される．
 			}
 			+enumerate{
+				* ${a}を定項とすると，${a}は項である．
 				* ${x}を変項とすると，${x}は項である．
-				* ${f}を${n}項演算子，${t_1,\dots,t_n}を項とすると，${f\p{t_1,\dots,t_n}}は項である．
+				* ${f}を${n}項演算子，${t_1,\dots,t_n}を項とすると，${f\p{t_1,\dots,t_n}}は項である
+				\footnote{${f\p{t_1,\dots,t_n}}の括弧やコンマも含めた記号列が項であることに注意せよ．これは後の定義\ref(`definition:1pl-formula`);などでも同様．}
+				．
 				* 上記以外に項は存在しない．
 			}
 		>
@@ -88,25 +100,29 @@ document(|
 				* ${P}を${n}項述語，${t_1,\dots,t_n}を項とすると，${P\p{t_1,\dots,t_n}}は論理式である．
 				* ${\phi,\psi}を論理式とすると，${\lnot-symbol\p{\phi}}および${\land-symbol\p{\phi,\psi}}は論理式である．
 				* ${\phi}を論理式，${x}を変項とすると，${\forall x \phi}は論理式である．
+				* ${\phi}を論理式とすると，${\p{\phi}}は論理式である．
 				* 上記以外に論理式は存在しない．
 			}
 		>
 		+p{
-			定義\ref(`definition:1pl-formula`);の真理関数の括弧の書き方は冗長であり，一般的には中置記法で書く．
+			定義\ref(`definition:1pl-formula`);の論理関数の括弧の書き方は冗長であり，一般的には中置記法で書く．
 		}
-		+definition ?:(`definition:1pl-infix`) ?:({真理関数の括弧及び中置}) <
+		+definition ?:(`definition:1pl-infix`) ?:({論理関数の括弧及び中置}) <
 			+p{
-				真理関数では括弧は可能な限り省略し，なおかつ中置記法で書くことが出来る．
+				論理関数では括弧は可能な限り省略し，なおかつ中置記法で書くことが出来る．
 				すなわち以下の左辺のように書くことで，実際の論理式である右辺を表すとする．
 			}
 			+align ?:(AZMathEquation.notag) [
 				${\lnot \phi}; ${\defeq \lnot-symbol\p{\phi}};
 				${\phi \land \psi}; ${\defeq \land-symbol\p{\phi,\psi}};
 			];
+			+pn {
+				括弧の省略は，一般的な範疇で行えるものとする．
+			}
 		>
-		+definition ?:(`definition:1pl-etc-syntaxsugar`) ?:({真理関数の糖衣構文}) <
+		+definition ?:(`definition:1pl-etc-syntaxsugar`) ?:({論理関数の糖衣構文}) <
 			+p{
-				真理関数${\lor-symbol,\limp-symbol,\liff-symbol}及び量化子${\exists}を糖衣構文として導入する．
+				論理関数${\lor-symbol,\limp-symbol,\liff-symbol}及び量化子${\exists}を糖衣構文として導入する．
 				すなわち，本来存在する${\lnot-symbol,\land-symbol,\forall}のみを使って以下のように定義する．
 				ただし${x}は変項，${\phi,\psi}は論理式である．
 			}
@@ -115,6 +131,27 @@ document(|
 				${\phi \limp \psi}; ${\defeq \lnot \phi \lor \psi};
 				${\phi \liff \psi}; ${\defeq \p{\phi \limp \psi} \land \p{\psi \limp \phi}};
 				${\exists x \phi}; ${\defeq \lnot \forall x \lnot \phi};
+			];
+		>
+		+notation ?:(`notation:1pl-strict-formula`) ?:({論理式の厳密な表記}) <
+			+p{
+				論理式の表記${\phi}から，
+				定義\ref(`definition:1pl-infix`);と定義\ref(`definition:1pl-etc-syntaxsugar`);で導入した
+				記法と糖衣構文を取り払い，
+				定義\ref(`definition:1pl-language`);で定義した記号だけで表された
+				厳密な論理式の表記${\phi'}が存在する．
+				例えば，
+				論理式${\exists x \p{P\p{x} \limp Q\p{x}}}は以下のようにして
+				厳密な表記に変形出来る．
+			}
+			+align ?:(AZMathEquation.notag) [
+				${\exists x \p{P\p{x} \limp Q\p{x}}}; ${\defeq \lnot \forall x \lnot \p{P\p{x} \limp Q\p{x}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{P\p{x} \limp Q\p{x}}}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot P\p{x} \lor Q\p{x}}}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{P\p{x}} \lor Q\p{x}}}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot \lnot \p{P\p{x}} \land \lnot Q\p{x}}}}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot\p{\lnot \p{P\p{x}}} \land \lnot \p{Q\p{x}}}}}}};
+				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\land-symbol \p{\lnot\p{\lnot \p{P\p{x}}}, \lnot \p{Q\p{x}}}}}}}};
 			];
 		>
 	>
@@ -126,45 +163,83 @@ document(|
 		>
 	>
 	+section{Gödel数}<
-		+definition ?:(`definition:term-godel-numbering`) ?:({項のGödel数}) <
+		+p{
+			項，論理式，論理式の有限列には一意な自然数を与える
+			\footnote{別の言い方をすれば，項，論理式，論理式列を何らかの自然数へとエンコードする．}
+			事が出来る．
+			その自然数をGödel数と呼ぶ．
+			項，論理式，論理式列にGödel数を割り当てることを，Gödel数化と呼ぶ．
+		}
+		+definition ?:(`definition:godel-number-symbol`) ?:({Gödel数記号と翻訳}) <
+			% TODO: 等幅体などにして見やすくする．
 			+p{
-				次のようにして，項${t}に対してGödel数を割り当てることが出来る．
-			}
-			+p{
-				このことを自然数${x}を用いて次のように表す．
+				Gödel数のための記号を12個導入する．以下，この12個をGödel数記号と呼ぶ．
 			}
 			+math (${
-			  x = \godelnumber{t}
+				a v f P \prime , ( ) \lnot-symbol \land-symbol \forall \hash
 			});
+			+p{
+				定義\ref(`definition:1pl-language`);で定義した一階述語論理の記号を，
+				以下の規則でGödel数記号へと翻訳する．
+			}
+			+enumerate{
+				* 定項${a,b,\dots}はそれぞれ${(a'),(a''),\dots}のように翻訳する．
+				すなわち，${n}番目の定項には${a}に${\prime}を${n}個付けたものを括弧${()}で括るとする．
+				* 定項と同様にして，変項${x,y,\cdots}はそれぞれ${(v'),(v''),\dots}へ，
+				${n}項演算子${f,g,\cdots}はそれぞれ${(f'),(f''),\dots}へ，
+				${n}項述語${P,Q,\cdots}はそれぞれ${(P'),(P''),\dots}のように翻訳する．
+				* 論理関数${\lnot-symbol,\land-symbol}はそれぞれ${\lnot-symbol,\land-symbol}へと翻訳する．
+				* 量化子${\forall}は${\forall}へと翻訳する．
+				* 括弧${(,)}及びコンマ${,}はそれぞれ${(),}へと翻訳する．
+			}
+			+p{
+
+			}
 		>
-		+definition ?:(`definition:formula-godel-numbering`) ?:({論理式のGödel数}) <
+		+definition ?:(`definition:term-godel-numbering`) ?:({式のGödel数}) <
 			+p{
-				次のようにして，論理式${\phi}に対してGödel数を割り当てることが出来る．
-			}
-			+p{
-				このことを自然数${x}を用いて次のように表す．
-			}
-			+math (${
-			  x = \godelnumber{\phi}
-			});
-			+p{
-				なお今後，${x}をGödel数として持つ論理式を${E_x}と書くこともある．
-			}
-		>
-		+definition ?:(`definition:formulae-godel-numbering`) ?:({論理式列のGödel数}) <
-			+p{
-				次のようにして，論理式の有限列${\phi_1,\phi_2,\dots,\phi_n}に対してGödel数を割り当てることが出来る．
-			}
-			+p{
-				このことを自然数${x}を用いて次のように表す．
+				一階述語論理の式${E}の記号全てをGödel数記号に翻訳して得られるGödel数記号列を${S_E}とする．
+				この記号列を12進数の自然数として解釈した値を式${E}のGödel数とする．
+				このことを自然数${x_E}を用いて次のように表す．
 			}
 			+math (${
-			  x = \godelnumber{\phi_1,\phi_2,\dots,\phi_n}
+			  x_E = \godelnumber{E}
 			});
+			+pn{
+				逆に，${x}をGödel数として持つ一階述語論理の式を${E_x}と表すことにする．
+			}
 		>
 		+p{
-			今後，項，論理式，論理式列にGödel数を割り当てることを，Gödel数化と呼ぶ．
+			以降，断らなければ自然数とは10進数ではなく，12進数で表されるものを指す．
 		}
+		+notation ?:(`notation:godel-numbering-strict-formula`) <
+			+p{
+				論理式には厳密な表記が存在することを注意\ref(`notation:1pl-strict-formula`);で確認した．
+				今後，論理式をGödel数化するとしたとき，実際にはまず厳密な表記へ変換した上でGödel数化していることに注意せよ．
+				さもなければ，糖衣構文をGödel数記号に対応させる翻訳規則が存在しないか，
+				あるいは，括弧の違いなどで一意にGödel数を与えることが出来ないといった事態が発生する．
+				ただし，今後それをわざわざ断ることはない．
+			}
+		>
+		+notation ?:(`notation:expression-from-godelnumber`) <
+			+p{
+				当然ながら，${x}をGödel数とする一階述語論理の式${E_x}が，項や論理式といった意味のあるものであるという保証は存在しない．
+			}
+		>
+		+p{
+			論理式を有限個並べた列もGödel数化する事が出来る．
+		}
+		+definition ?:(`definition:formulae-godel-numbering`) ?:({論理式列のGödel数}) <
+			+p{
+				論理式の有限列${\Gamma = \phi_1,\phi_2,\dots,\phi_n}が与えられたき，
+				${\Gamma}のGödel数を以下のように与える．
+			}
+			+pn {
+				${\Gamma}の要素をそれぞれ翻訳することで，Gödel数記号列の有限列${E_{\phi_1},E_{\phi_2},\dots,E_{\phi_n}}を得る．
+				次のGödel数記号列${E_\Gamma}を12進数の自然数として解釈した値を${\Gamma}のGödel数とする．
+			}
+			% TODO: E_\Gamma の構成方法
+		>
 	>
 	+section{第一不完全性定理}<
 		+subsection{体系における証明}<
