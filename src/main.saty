@@ -1,20 +1,263 @@
-@require: stdjareport
+@require: class-jlreq/jlreq
+@require: class-jlreq/theorem
 @require: figbox/figbox
 @require: enumitem/enumitem
 @require: azmath/azmath
 @require: easytable/easytable
 
-let-math \p x = ${\paren{#x}}
-in
+open EnumitemAlias
 
+let-block +dd dt it-dd = '< +ditem?:(fun it -> {#it;}){#dt;}{#it-dd;}<> >
+
+let-mutable theorem-counter <- 0
+let-block ctx +theorem = JLReqTheorem.theorem-scheme (|
+	JLReqTheorem.default-config-theorem with font = [italic];
+|) {定理} theorem-counter ctx
+let-block ctx +definition = JLReqTheorem.theorem-scheme (|
+	JLReqTheorem.default-config-theorem with font = [italic];
+|) {定義} theorem-counter ctx
+let-block ctx +notation = JLReqTheorem.theorem-scheme (|
+	JLReqTheorem.default-config-theorem with font = [italic];
+|) {注意} theorem-counter ctx
+let-block ctx +fact = JLReqTheorem.theorem-scheme (|
+	JLReqTheorem.default-config-theorem with font = [italic];
+|) {事実} theorem-counter ctx
+
+let-math \p x = ${\paren{#x}}
+let-math \system = ${\mathcal{S}}
+
+let-math \ulcorner = math-char MathBin `┌`
+let-math \urcorner = math-char MathBin `┐`
+let-math \godelnumber x = ${\ulcorner #x \urcorner}
+
+let-math \dots = ${\cdots}
+let-math \axiom args = ${\mathrm{axiom}\p{#args}}
+let-math \induction args = ${\mathrm{induction}\p{#args}}
+
+let-math \limp = ${\to}
+let-math \liff = math-char MathRel `↔`
+
+let-math \defeq = ${=}
+let-math \lnot-symbol = math-char MathBin `¬`
+let-math \land-symbol = math-char MathBin `∧`
+let-math \lor-symbol = math-char MathBin `∨`
+let-math \limp-symbol = math-char MathBin `→`
+let-math \liff-symbol = math-char MathBin `↔`
+
+in
 
 document(|
     title = { Gödelの不完全性定理 };
     author = { SnO2WMaN };
+	date={ "2023/01/13" };
     show-title = false;
-    show-toc = false;
+    show-toc = true;
 |)'<
-    +chapter{  }<
+    +section{ はじめに}<>
+	+section{一階述語論理}<
+		+definition ?:(`definition:1pl-language`) ?:({一階述語論理の言語})<
+			+p{
+				一階述語論理の言語として，以下の記号を用いる．
+			}
+			+description<
+				+dd{定数}{${a,b,c,\cdots}}
+				+dd{変項}{${x,y,z,\cdots}}
+				+dd{${n}項演算子}{${f,g,h,\cdots}}
+				+dd{${n}項述語}{${P,Q,R,\cdots}}
+				+dd{論理関数}{${\lnot-symbol,\land-symbol}}
+				+dd{量化子}{${\forall}}
+				+dd{コンマ}{${,}}
+				+dd{括弧}{${(,)}}
+			>
+		>
+		+definition ?:(`definition:1pl-term`) ?:({一階述語論理の項}) <
+			+p{
+				一階述語論理での項とは，次のように定義される．
+			}
+			+enumerate{
+				* ${x}を変項とすると，${x}は項である．
+				* ${f}を${n}項演算子，${t_1,\dots,t_n}を項とすると，${f\p{t_1,\dots,t_n}}は項である．
+				* 上記以外に項は存在しない．
+			}
+		>
+		+definition ?:(`definition:1pl-formula`) ?:({一階述語論理の論理式}) <
+			+p{
+				一階述語論理での論理式とは，次のように定義される．
+			}
+			+enumerate{
+				* ${P}を${n}項述語，${t_1,\dots,t_n}を項とすると，${P\p{t_1,\dots,t_n}}は論理式である．
+				* ${\phi,\psi}を論理式とすると，${\lnot-symbol\p{\phi}}および${\land-symbol\p{\phi,\psi}}は論理式である．
+				* ${\phi}を論理式，${x}を変項とすると，${\forall x \phi}は論理式である．
+				* 上記以外に論理式は存在しない．
+			}
+		>
+		+p{
+			定義\ref(`definition:1pl-formula`);の真理関数の括弧の書き方は冗長であり，一般的には中置記法で書く．
+		}
+		+definition ?:(`definition:1pl-infix`) ?:({真理関数の括弧及び中置}) <
+			+p{
+				真理関数では括弧は可能な限り省略し，なおかつ中置記法で書くことが出来る．
+				すなわち以下の左辺のように書くことで，実際の論理式である右辺を表すとする．
+			}
+			+align ?:(AZMathEquation.notag) [
+				${\lnot \phi}; ${\defeq \lnot-symbol\p{\phi}};
+				${\phi \land \psi}; ${\defeq \land-symbol\p{\phi,\psi}};
+			];
+		>
+		+definition ?:(`definition:1pl-etc-syntaxsugar`) ?:({真理関数の糖衣構文}) <
+			+p{
+				真理関数${\lor-symbol,\limp-symbol,\liff-symbol}及び量化子${\exists}を糖衣構文として導入する．
+				すなわち，本来存在する${\lnot-symbol,\land-symbol,\forall}のみを使って以下のように定義する．
+				ただし${x}は変項，${\phi,\psi}は論理式である．
+			}
+			+align ?:(AZMathEquation.notag) [
+				${\phi \lor \psi}; ${\defeq \lnot\p{ \lnot \phi \land \lnot \psi }};
+				${\phi \limp \psi}; ${\defeq \lnot \phi \lor \psi};
+				${\phi \liff \psi}; ${\defeq \p{\phi \limp \psi} \land \p{\psi \limp \phi}};
+				${\exists x \phi}; ${\defeq \lnot \forall x \lnot \phi};
+			];
+		>
+	>
+	+section{帰納的関数}<
+		+subsection{定義}<
+			+p{
 
-    >
+			}
+		>
+	>
+	+section{Gödel数}<
+		+definition ?:(`definition:term-godel-numbering`) ?:({項のGödel数}) <
+			+p{
+				次のようにして，項${t}に対してGödel数を割り当てることが出来る．
+			}
+			+p{
+				このことを自然数${x}を用いて次のように表す．
+			}
+			+math (${
+			  x = \godelnumber{t}
+			});
+		>
+		+definition ?:(`definition:formula-godel-numbering`) ?:({論理式のGödel数}) <
+			+p{
+				次のようにして，論理式${\phi}に対してGödel数を割り当てることが出来る．
+			}
+			+p{
+				このことを自然数${x}を用いて次のように表す．
+			}
+			+math (${
+			  x = \godelnumber{\phi}
+			});
+			+p{
+				なお今後，${x}をGödel数として持つ論理式を${E_x}と書くこともある．
+			}
+		>
+		+definition ?:(`definition:formulae-godel-numbering`) ?:({論理式列のGödel数}) <
+			+p{
+				次のようにして，論理式の有限列${\phi_1,\phi_2,\dots,\phi_n}に対してGödel数を割り当てることが出来る．
+			}
+			+p{
+				このことを自然数${x}を用いて次のように表す．
+			}
+			+math (${
+			  x = \godelnumber{\phi_1,\phi_2,\dots,\phi_n}
+			});
+		>
+		+p{
+			今後，項，論理式，論理式列にGödel数を割り当てることを，Gödel数化と呼ぶ．
+		}
+	>
+	+section{第一不完全性定理}<
+		+subsection{体系における証明}<
+			+definition ?:(`definition:system-proof`) ?:({証明}) <
+				+p{
+					体系${\system}での論理式${\phi}の証明とは，
+					次の条件を満たす論理式${\psi_i}の有限列${\psi_1,\psi_2,\dots,\psi_{n}}を指す．
+				}
+				+enumerate{
+					* ${\psi_i}は${\system}の公理のいずれかである．
+					* ${\psi_i}は${k}個の論理式${\psi_{j_1},\dots,\psi_{j_k}}より${\system}のいずれかの推論規則によって導出される論理式である．
+					ただし，${j_1 < \cdots < j_k < i}とする．
+					* ${\psi_n = \phi}．
+				}
+			>
+			+notation ?:(`notation:proof-godelnumberizable`) ?:({証明のGödel数化}) <
+				+p{
+					定義\ref(`definition:formulae-godel-numbering`);より，ある論理式${\phi}の証明はGödel数化できる．
+					すなわち，有限の論理式列${\psi_1,\psi_2,\dots,\psi_n}を${\phi}の証明とすると，次の自然数${x}が存在する．
+				}
+				+math (${
+				  x = \godelnumber{ \psi_1,\psi_2,\dots,\psi_n }
+				});
+			>
+			+fact ?: (`fact:functionize-axiom-and-induction`) ?:({${\system}の公理と導出の関数化}) <
+				+p{
+					${x,y_1,\dots,y_k}を自然数とする．体系${\system}に対して，次の関数${\axiom{x}}と${\induction{x,y_1,\dots,y_k}}が，
+					原始再帰関数として構成出来るとする．
+				}
+				+enumerate{
+					* ${\axiom{x}}は，
+					${x}をGödel数とする論理式${E_x}が，
+					${\system}のいずれかの公理の形に合致していれば0を，
+					そうでなければ1を返す関数とする．
+
+					* ${\induction{x,y_1,\dots,y_k}}は，
+					${y_1,\cdots,y_k}をGödel数とする論理式${E_{y_1},\cdots,E_{y_k}}から，
+					${\system}のいずれかの推論規則によって導出される論理式のGödel数が${x}であるならば0を，
+					そうでなければ1を返す関数とする．
+				}
+			>
+		>
+		+subsection{爆発律} <
+			+definition ?:(`definition:explosion-raw`) ?:({体系の爆発律}) <
+				+p{
+					${A}を論理式とし，${A}とその否定${\lnot A}が${\system}の両方が${\system}で証明出来たとする．
+					このとき，任意の論理式${B}が証明可能であるという性質が
+					体系${\system}に備わっているとき，この性質を体系の爆発律と呼ぶ．
+				}
+			>
+		>
+		+subsection{論理式の表現可能性}<>
+		+subsection{体系の完全性と無矛盾性}<
+			+definition ?:(`definition:system-completeness`) ?:({体系の完全性}) <
+				+p{
+					ある体系${\system}が完全である，または，完全性を持つとは，
+					${P}とその否定${\lnot P}のどちらもが${\system}で証明出来ない論理式${P}が存在しないことを指す．
+					すなわち，次を満たす論理式が存在しないことである．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\system}; ${\vdash P};
+					${\system}; ${\vdash \lnot P};
+				];
+				+p{
+					${\system}にそのような論理式${P}が存在するなら，その体系は不完全であるという．
+				}
+			>
+			+definition ?:(`definition:system-consistency`) ?:({体系の無矛盾性}) <
+				+p{
+					ある体系${\system}が無矛盾である，または，無矛盾性を持つとは，
+					${Q}とその否定${\lnot Q}のどちらもが${\system}で証明出来る論理式${Q}が存在しないことを指す．
+					すなわち，次を満たす論理式が存在しないことである．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\system}; ${\vdash Q};
+					${\system}; ${\vdash \lnot Q};
+				];
+				+p{
+					${\system}にそのような論理式${Q}が存在するなら，その体系は矛盾しているという．
+				}
+			>
+			+notation ?:(`notation:system-inconsistency-explosion`) ?:({体系の無矛盾性と爆発律}) <
+				+p{
+					体系${\system}が爆発律を備えているとする．
+					${\system}が矛盾しているなら，そのような論理式${Q}から${Q \land \lnot Q}が${\system}で証明可能であるので，
+					任意の論理式が${\system}で証明可能である．
+					ここから逆に，証明不能な論理式が${\system}に存在するなら，${\system}は少なくとも矛盾していないことがわかる．
+				}
+			>
+		>
+	>
+	+section{第二不完全性定理}<
+		+p{
+		}
+	>
 >

@@ -35,6 +35,7 @@
         packages = {
           satysfi-dist = pkgs.satyxin.buildSatysfiDist {
             packages = with pkgs.satyxinPackages; [
+              class-jlreq
               enumitem
               easytable
               figbox
