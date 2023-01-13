@@ -26,6 +26,9 @@ let-block ctx +fact = JLReqTheorem.theorem-scheme (|
 
 let-math \system = ${\mathcal{S}}
 
+let-math \hsystem = ${\mathcal{H}}
+let-math \proves = ${\vdash}
+
 let-math \ulcorner = math-char MathBin `┌`
 let-math \urcorner = math-char MathBin `┐`
 let-math \godelnumber x = ${\overbrace{#x}}
@@ -47,6 +50,8 @@ let-math \liff-symbol = math-char MathBin `↔`
 let-math \prime = math-char MathBin `'`
 let-math \hash = math-char MathBin `#`
 
+let-math \iff = ${\Longleftrightarrow}
+
 in
 
 document(|
@@ -58,101 +63,173 @@ document(|
 |)'<
     +section{ はじめに}<>
 	+section{一階述語論理}<
-		+definition ?:(`definition:1pl-language`) ?:({一階述語論理の言語})<
-			+p{
-				一階述語論理の言語として，以下の記号を用いる．
-			}
-			+description<
-				+dd{定項}{${a,b,c,\cdots}}
-				+dd{変項}{${x,y,z,\cdots}}
-				+dd{${n}項演算子}{${f,g,h,\cdots}}
-				+dd{${n}項述語}{${P,Q,R,\cdots}}
-				+dd{論理関数}{${\lnot-symbol,\land-symbol}}
-				+dd{量化子}{${\forall}}
-				+dd{コンマ}{${,}}
-				+dd{括弧}{${(,)}}
+		+subsection{構文論}<
+			+definition ?:(`definition:1pl-language`) ?:({一階述語論理の言語})<
+				+p{
+					一階述語論理の言語として，以下の記号を用いる．
+				}
+				+description<
+					+dd{定項}{${a,b,c,\cdots}}
+					+dd{変項}{${x,y,z,\cdots}}
+					+dd{${n}項演算子}{${f,g,h,\cdots}}
+					+dd{${n}項述語}{${P,Q,R,\cdots}}
+					+dd{論理関数}{${\lnot-symbol,\land-symbol}}
+					+dd{量化子}{${\forall}}
+					+dd{コンマ}{${,}}
+					+dd{括弧}{${(,)}}
+				>
+				+pn {
+					上記の記号を並べたものを式と呼ぶ．式には以降の
+					定義\ref(`definition:1pl-term`);や
+					定義\ref(`definition:1pl-formula`);
+					に当てはまらない全く無意味な並びも存在する．
+				}
 			>
-			+pn {
-				上記の記号を並べたものを式と呼ぶ．式には以降の
-				定義\ref(`definition:1pl-term`);や
-				定義\ref(`definition:1pl-formula`);
-				に当てはまらない全く無意味な並びも存在する．
-			}
-		>
-		+definition ?:(`definition:1pl-term`) ?:({一階述語論理の項}) <
+			+definition ?:(`definition:1pl-term`) ?:({一階述語論理の項}) <
+				+p{
+					一階述語論理での項とは，次のように定義される．
+				}
+				+enumerate{
+					* ${a}を定項とすると，${a}は項である．
+					* ${x}を変項とすると，${x}は項である．
+					* ${f}を${n}項演算子，${t_1,\dots,t_n}を項とすると，${f\p{t_1,\dots,t_n}}は項である
+					\footnote{${f\p{t_1,\dots,t_n}}の括弧やコンマも含めた記号列が項であることに注意せよ．これは後の定義\ref(`definition:1pl-formula`);などでも同様．}
+					．
+					* 上記以外に項は存在しない．
+				}
+			>
+			+definition ?:(`definition:1pl-formula`) ?:({一階述語論理の論理式}) <
+				+p{
+					一階述語論理での論理式とは，次のように定義される．
+				}
+				+enumerate{
+					* ${P}を${n}項述語，${t_1,\dots,t_n}を項とすると，${P\p{t_1,\dots,t_n}}は論理式である．
+					* ${\phi,\psi}を論理式とすると，${\lnot-symbol\p{\phi}}および${\land-symbol\p{\phi,\psi}}は論理式である．
+					* ${\phi}を論理式，${x}を変項とすると，${\forall x \phi}は論理式である．
+					* ${\phi}を論理式とすると，${\p{\phi}}は論理式である．
+					* 上記以外に論理式は存在しない．
+				}
+			>
 			+p{
-				一階述語論理での項とは，次のように定義される．
+				定義\ref(`definition:1pl-formula`);の論理関数の括弧の書き方は冗長であり，一般的には中置記法で書く．
 			}
-			+enumerate{
-				* ${a}を定項とすると，${a}は項である．
-				* ${x}を変項とすると，${x}は項である．
-				* ${f}を${n}項演算子，${t_1,\dots,t_n}を項とすると，${f\p{t_1,\dots,t_n}}は項である
-				\footnote{${f\p{t_1,\dots,t_n}}の括弧やコンマも含めた記号列が項であることに注意せよ．これは後の定義\ref(`definition:1pl-formula`);などでも同様．}
-				．
-				* 上記以外に項は存在しない．
-			}
+			+definition ?:(`definition:1pl-infix`) ?:({論理関数の括弧及び中置}) <
+				+p{
+					論理関数では括弧は可能な限り省略し，なおかつ中置記法で書くことが出来る．
+					すなわち以下の左辺のように書くことで，実際の論理式である右辺を表すとする．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\lnot \phi}; ${\defeq \lnot-symbol\p{\phi}};
+					${\phi \land \psi}; ${\defeq \land-symbol\p{\phi,\psi}};
+				];
+				+pn {
+					括弧の省略は，一般的な範疇で行えるものとする．
+				}
+			>
+			+definition ?:(`definition:1pl-etc-syntaxsugar`) ?:({論理関数の糖衣構文}) <
+				+p{
+					論理関数${\lor-symbol,\limp-symbol,\liff-symbol}及び量化子${\exists}を糖衣構文として導入する．
+					すなわち，本来存在する${\lnot-symbol,\land-symbol,\forall}のみを使って以下のように定義する．
+					ただし${x}は変項，${\phi,\psi}は論理式である．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\phi \lor \psi}; ${\defeq \lnot\p{ \lnot \phi \land \lnot \psi }};
+					${\phi \limp \psi}; ${\defeq \lnot \phi \lor \psi};
+					${\phi \liff \psi}; ${\defeq \p{\phi \limp \psi} \land \p{\psi \limp \phi}};
+					${\exists x \phi}; ${\defeq \lnot \forall x \lnot \phi};
+				];
+			>
+			+notation ?:(`notation:1pl-strict-formula`) ?:({論理式の厳密な表記}) <
+				+p{
+					論理式の表記${\phi}から，
+					定義\ref(`definition:1pl-infix`);と定義\ref(`definition:1pl-etc-syntaxsugar`);で導入した
+					記法と糖衣構文を取り払い，
+					定義\ref(`definition:1pl-language`);で定義した記号だけで表された
+					厳密な論理式の表記${\phi'}が存在する．
+					例えば，
+					論理式${\exists x \p{P\p{x} \limp Q\p{x}}}は以下のようにして
+					厳密な表記に変形出来る．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\exists x \p{P\p{x} \limp Q\p{x}}}; ${\defeq \lnot \forall x \lnot \p{P\p{x} \limp Q\p{x}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{P\p{x} \limp Q\p{x}}}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot P\p{x} \lor Q\p{x}}}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{P\p{x}} \lor Q\p{x}}}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot \lnot \p{P\p{x}} \land \lnot Q\p{x}}}}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot\p{\lnot \p{P\p{x}}} \land \lnot \p{Q\p{x}}}}}}};
+					${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\land-symbol \p{\lnot\p{\lnot \p{P\p{x}}}, \lnot \p{Q\p{x}}}}}}}};
+				];
+			>
 		>
-		+definition ?:(`definition:1pl-formula`) ?:({一階述語論理の論理式}) <
+		+subsection{Hilbert証明体系}<
 			+p{
-				一階述語論理での論理式とは，次のように定義される．
+				Hilbert流証明論に基づく．
 			}
-			+enumerate{
-				* ${P}を${n}項述語，${t_1,\dots,t_n}を項とすると，${P\p{t_1,\dots,t_n}}は論理式である．
-				* ${\phi,\psi}を論理式とすると，${\lnot-symbol\p{\phi}}および${\land-symbol\p{\phi,\psi}}は論理式である．
-				* ${\phi}を論理式，${x}を変項とすると，${\forall x \phi}は論理式である．
-				* ${\phi}を論理式とすると，${\p{\phi}}は論理式である．
-				* 上記以外に論理式は存在しない．
-			}
-		>
-		+p{
-			定義\ref(`definition:1pl-formula`);の論理関数の括弧の書き方は冗長であり，一般的には中置記法で書く．
-		}
-		+definition ?:(`definition:1pl-infix`) ?:({論理関数の括弧及び中置}) <
+			+definition ?:(`definition:hilbert-system`) ?:({Hilbert流証明論における証明体系}) <
+				+p{
+					証明体系${\hsystem}とは，次の公理と推論規則を纏めたものである．
+				}
+				+enumerate{
+					* 公理とは，無条件に証明可能であると定めた，いくつかの論理式${A_1,\dots,A_n}のことである．
+					* 推論規則とは，
+					前提となる論理式${\phi_1,\dots,\phi_n}が${\hsystem}で証明されているとき，
+					論理式${\psi}も${\hsystem}で証明可能である，
+					という規則のことである．
+					このとき${\psi}を推論規則から導出された論理式とも呼ぶ．
+				}
+			>
 			+p{
-				論理関数では括弧は可能な限り省略し，なおかつ中置記法で書くことが出来る．
-				すなわち以下の左辺のように書くことで，実際の論理式である右辺を表すとする．
+				以降この節では，Hilbert証明論の証明体系を，単に証明体系とか体系と呼ぶ．
 			}
-			+align ?:(AZMathEquation.notag) [
-				${\lnot \phi}; ${\defeq \lnot-symbol\p{\phi}};
-				${\phi \land \psi}; ${\defeq \land-symbol\p{\phi,\psi}};
-			];
-			+pn {
-				括弧の省略は，一般的な範疇で行えるものとする．
-			}
-		>
-		+definition ?:(`definition:1pl-etc-syntaxsugar`) ?:({論理関数の糖衣構文}) <
+			+definition ?:(`definition:hilbert-proof`) ?:({Hilbert流証明論における証明}) <
+				+p{
+					証明体系${\hsystem}において，
+					論理式${\phi_n}の証明とは，
+					次の条件を満たす論理式${\phi_i}の有限列${\phi_1,\phi_2,\dots,\phi_{n}}を指す．
+				}
+				+enumerate{
+					* ${\phi_i}は${\hsystem}の公理のいずれかの形である．
+					* ${\phi_i}は${k}個の論理式${\phi_{j_1},\dots,\phi_{j_k}}より${\hsystem}のいずれかの推論規則によって導出される論理式である．
+					ただし，${j_1 < \cdots < j_k < i}とする．
+				}
+				+pn{
+					論理式${\phi}に対して${\hsystem}の証明が存在するなら，
+					${\phi}は${\hsystem}で証明可能，あるいは，
+					${\phi}は${\hsystem}の定理であるという．
+					そのことを次のように表す．
+				}
+				+math (${
+				  \proves_{\hsystem} \phi
+				});
+			>
 			+p{
-				論理関数${\lor-symbol,\limp-symbol,\liff-symbol}及び量化子${\exists}を糖衣構文として導入する．
-				すなわち，本来存在する${\lnot-symbol,\land-symbol,\forall}のみを使って以下のように定義する．
-				ただし${x}は変項，${\phi,\psi}は論理式である．
+				定義\ref(`definition:hilbert-proof`);では，既に証明した定理を再利用することが出来ず，
+				長い論理式の列を証明として提出しなければならない．
+				それでは不便なので，証明の定義を拡張して演繹と呼ばれるものを考える．
+				更に演繹定理を考える．
 			}
-			+align ?:(AZMathEquation.notag) [
-				${\phi \lor \psi}; ${\defeq \lnot\p{ \lnot \phi \land \lnot \psi }};
-				${\phi \limp \psi}; ${\defeq \lnot \phi \lor \psi};
-				${\phi \liff \psi}; ${\defeq \p{\phi \limp \psi} \land \p{\psi \limp \phi}};
-				${\exists x \phi}; ${\defeq \lnot \forall x \lnot \phi};
-			];
-		>
-		+notation ?:(`notation:1pl-strict-formula`) ?:({論理式の厳密な表記}) <
-			+p{
-				論理式の表記${\phi}から，
-				定義\ref(`definition:1pl-infix`);と定義\ref(`definition:1pl-etc-syntaxsugar`);で導入した
-				記法と糖衣構文を取り払い，
-				定義\ref(`definition:1pl-language`);で定義した記号だけで表された
-				厳密な論理式の表記${\phi'}が存在する．
-				例えば，
-				論理式${\exists x \p{P\p{x} \limp Q\p{x}}}は以下のようにして
-				厳密な表記に変形出来る．
-			}
-			+align ?:(AZMathEquation.notag) [
-				${\exists x \p{P\p{x} \limp Q\p{x}}}; ${\defeq \lnot \forall x \lnot \p{P\p{x} \limp Q\p{x}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{P\p{x} \limp Q\p{x}}}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot P\p{x} \lor Q\p{x}}}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{P\p{x}} \lor Q\p{x}}}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot \lnot \p{P\p{x}} \land \lnot Q\p{x}}}}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\lnot\p{\lnot \p{P\p{x}}} \land \lnot \p{Q\p{x}}}}}}};
-				${}; ${\defeq \lnot \p{\forall x \lnot \p{\p{\lnot \p{\land-symbol \p{\lnot\p{\lnot \p{P\p{x}}}, \lnot \p{Q\p{x}}}}}}}};
-			];
+			+definition ?:(`definition:hilbert-deduction`) ?:({Hilbert流証明論における演繹}) <
+				+p{
+					証明体系${\hsystem}において，
+					${\Gamma}を${\hsystem}で証明された論理式の列とする．
+					前提${\Gamma}での${\phi_n}の演繹とは，
+					次の条件を満たす論理式${\phi_i}の有限列${\phi_1,\phi_2,\dots,\phi_{n}}を指す．
+				}
+				+enumerate{
+					* ${\phi_i}は${\hsystem}の公理のいずれかの形である．
+					* ${\phi_i}は${\Gamma}の要素のいずれかである．
+					* ${\phi_i}は${k}個の論理式${\phi_{j_1},\dots,\phi_{j_k}}より${\hsystem}のいずれかの推論規則によって導出される論理式である．
+					ただし，${j_1 < \cdots < j_k < i}とする．
+				}
+			>
+			+theorem ?:(`theorem:hilbert-deduction-theorem`) ?:({Hilbert流証明論の演繹定理}) <
+				+p{
+					${\hsystem}で証明された論理式の列${\Gamma}，論理式${\phi,\psi}について，以下が成り立つ．
+				}
+				+align ?:(AZMathEquation.notag) [
+					${\Gamma \proves_\hsystem \phi \limp \psi}; ${\iff \Gamma, \phi \proves_\hsystem \psi};
+				];
+			>
 		>
 	>
 	+section{帰納的関数}<
@@ -240,30 +317,21 @@ document(|
 			}
 			% TODO: E_\Gamma の構成方法
 		>
+		+notation ?:(`notation:hilbertproof-godelnumbering`) ?:({Hilbert流証明のGödel数化}) <
+			+p{
+				Hilbert流の証明体系${\hsystem}において，
+				定義\ref(`definition:hilbert-proof`);と定義\ref(`definition:formulae-godel-numbering`);より，
+				ある論理式${\phi}の${\hsystem}における証明がGödel数化できる．
+				すなわち，有限の論理式列${\psi_1,\psi_2,\dots,\psi_n}を${\phi}の${\hsystem}での証明とすると，次の自然数${x}が存在する．
+			}
+			+math (${
+			  x = \godelnumber{ \psi_1,\psi_2,\dots,\psi_n }
+			});
+		>
 	>
 	+section{第一不完全性定理}<
 		+subsection{体系における証明}<
-			+definition ?:(`definition:system-proof`) ?:({証明}) <
-				+p{
-					体系${\system}での論理式${\phi}の証明とは，
-					次の条件を満たす論理式${\psi_i}の有限列${\psi_1,\psi_2,\dots,\psi_{n}}を指す．
-				}
-				+enumerate{
-					* ${\psi_i}は${\system}の公理のいずれかである．
-					* ${\psi_i}は${k}個の論理式${\psi_{j_1},\dots,\psi_{j_k}}より${\system}のいずれかの推論規則によって導出される論理式である．
-					ただし，${j_1 < \cdots < j_k < i}とする．
-					* ${\psi_n = \phi}．
-				}
-			>
-			+notation ?:(`notation:proof-godelnumberizable`) ?:({証明のGödel数化}) <
-				+p{
-					定義\ref(`definition:formulae-godel-numbering`);より，ある論理式${\phi}の証明はGödel数化できる．
-					すなわち，有限の論理式列${\psi_1,\psi_2,\dots,\psi_n}を${\phi}の証明とすると，次の自然数${x}が存在する．
-				}
-				+math (${
-				  x = \godelnumber{ \psi_1,\psi_2,\dots,\psi_n }
-				});
-			>
+
 			+fact ?: (`fact:functionize-axiom-and-induction`) ?:({${\system}の公理と導出の関数化}) <
 				+p{
 					${x,y_1,\dots,y_k}を自然数とする．体系${\system}に対して，次の関数${\axiom{x}}と${\induction{x,y_1,\dots,y_k}}が，
