@@ -202,6 +202,33 @@ document(|
 				  \proves_{\hsystem} \phi
 				});
 			>
+			+notation ?:(`notation:hilbert-axiom-schema`) ?:({公理図式}) <
+				+p{
+					定義\ref(`definition:hilbert-proof`);において，論理式が公理の形であるとはどのようなことなのか．
+					まず，定義\ref(`definition:1pl-formula`);より，論理式は可算無限個構成することが出来る．
+					そのため，常に証明可能な論理式である公理にも，実際にはいくつかのバリエーションが存在する．
+					例えば，${\phi,\psi}を論理式とすると，次の論理式は内容的には同じ公理を指しているとみなされる．
+				}
+				+gather ?:(AZMathEquation.notag) (${
+					| \phi \limp \lnot\lnot\phi
+					| \psi \limp \lnot\lnot\psi
+					| \p{\phi \land \psi} \limp \lnot\lnot \p{\phi \land \psi}
+				|});
+				+pn {
+					これらの公理を共通化して表したい．
+					まず，任意の論理式を表すメタ記号
+					\footnote{一階述語論理の記号として定義されていないが，一階述語論理について言及出来る記号．}
+					を${\Phi}とする．
+					これを用いて，先程の論理式は以下のように一般化される．
+				}
+				+eqn ?:(AZMathEquation.notag) (${
+					\Phi \limp \lnot\lnot \Phi
+				});
+				+pn {
+					このように任意の論理式を表すメタ記号${\Phi,\Psi,\dots}を用いて表される公理の一般系を，
+					公理図式と呼ぶ．
+				}
+			>
 			+p{
 				定義\ref(`definition:hilbert-proof`);では，既に証明した定理を再利用することが出来ず，
 				長い論理式の列を証明として提出しなければならない．
